@@ -10,7 +10,7 @@ from jinja2 import Environment, FileSystemLoader
 
 from cash_register import function
 from cash_register import models
-from cash_machine.settings import ALLOWED_HOSTS
+from cash_machine import settings
 
 
 class MakeChek(views.APIView):
@@ -28,20 +28,20 @@ class MakeChek(views.APIView):
         env = Environment(loader=FileSystemLoader('.'))
         template = env.get_template('cash_register/jinja2/receipt.html')
         pdf_template = template.render(content)
-        full_name_pdf, name_pdf = function.get_file_name(name='chek', extension='pdf', path=function.DIR)
+        full_name_pdf, name_pdf = function.get_file_name(name='chek', extension='pdf', path=settings.MEDIA_DIR)
         function.make_pdf(file=pdf_template, name=full_name_pdf)
-        full_name_img, name_img = function.get_file_name(name='image', extension='png', path=function.STATIC_DIR)
-        url = f'{ALLOWED_HOSTS[0]}:{function.PORT}/media/{name_pdf}'
+        full_name_img, name_img = function.get_file_name(name='image', extension='png', path=settings.STATIC_DIR)
+        url = f'{settings.ALLOWED_HOSTS[0]}:{settings.PORT}/media/{name_pdf}'
         function.make_qr_code(url=url, name=full_name_img)
         return render(request, 'index.html', context={'image': name_img})
 
 
 def get_chek(request, name):
-    file_list = os.listdir(function.DIR)
+    file_list = os.listdir(settings.MEDIA_DIR)
     if file_list:
         for file in file_list:
             print(file)
             if file == name:
-                full_name = os.path.join(function.DIR, name)
+                full_name = os.path.join(settings.MEDIA_DIR, name)
                 return FileResponse(open(full_name, 'rb'), content_type='application/pdf')
     return HttpResponseNotFound()

@@ -4,13 +4,6 @@ from collections import defaultdict
 import pdfkit
 import qrcode
 
-from cash_machine.settings import BASE_DIR, ALLOWED_HOSTS
-
-DIR = os.path.join(BASE_DIR, 'media')
-STATIC_DIR = os.path.join(BASE_DIR, 'cash_register\\static')
-PORT = 8000
-
-
 
 def get_file_name(path, name, extension):
     """Формирование полного имени файла"""
